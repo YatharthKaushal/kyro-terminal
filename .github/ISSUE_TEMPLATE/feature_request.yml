@@ -1,0 +1,51 @@
+name: Feature request
+description: Suggest a feature or improvement for Kyro
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For larger features or architectural changes, open this issue **before**
+        writing code so the implementation can be discussed first.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What are you trying to do that Kyro makes hard or impossible today?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Engine — PTY, parser, buffer, sessions
+        - UI — rendering, tabs, panes, sidebar
+        - Integrations — Git, SSH, AI
+        - Configuration — themes, keybindings
+        - Build / tooling
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other terminals that solve this, and how.
+
+  - type: checkboxes
+    id: contribute
+    attributes:
+      label: Contribution
+      options:
+        - label: I'm willing to work on this

@@ -24,6 +24,7 @@ built from the ground up with Rust, Tauri, and Svelte.
 
 <br/>
 
+[![CI](https://img.shields.io/github/actions/workflow/status/YatharthKaushal/kyro-terminal/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/YatharthKaushal/kyro-terminal/actions/workflows/ci.yml)
 [![Status](https://img.shields.io/badge/status-early%20development-orange?style=flat-square)](https://github.com/YatharthKaushal/kyro-terminal)
 [![Rust](https://img.shields.io/badge/Rust-000000?style=flat-square&logo=rust&logoColor=white)](https://www.rust-lang.org/)
 [![Tauri](https://img.shields.io/badge/Tauri-24C8DB?style=flat-square&logo=tauri&logoColor=black)](https://tauri.app/)
@@ -33,8 +34,10 @@ built from the ground up with Rust, Tauri, and Svelte.
 
 [Overview](#overview) ·
 [Planned Features](#planned-features) ·
+[Getting Started](#getting-started) ·
 [Tech Stack](#tech-stack) ·
 [Structure](#project-structure) ·
+[Docs](#documentation) ·
 [Contributing](#contributing) ·
 [License](#license)
 
@@ -103,6 +106,57 @@ sacrificing performance.
 
 ---
 
+## Getting Started
+
+> [!IMPORTANT]
+> There is no release build yet. The steps below build from source and launch a
+> development window — the terminal itself is not functional.
+
+### Prerequisites
+
+| Tool | Version | Notes |
+| :--- | :--- | :--- |
+| [Rust](https://rustup.rs/) | 1.85+ | The `engine` crate uses `edition = "2024"` |
+| [Node.js](https://nodejs.org/) | 20+ | |
+| [pnpm](https://pnpm.io/) | 10+ | `npm install -g pnpm` |
+
+Plus the platform dependencies required by Tauri v2:
+
+- **Windows** — [C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) and [WebView2](https://developer.microsoft.com/microsoft-edge/webview2/) *(preinstalled on Windows 11)*
+- **Linux** — `libwebkit2gtk-4.1-dev`, `build-essential`, `libxdo-dev`, `libssl-dev`, `libayatana-appindicator3-dev`, `librsvg2-dev`
+- **macOS** — Xcode Command Line Tools (`xcode-select --install`)
+
+Full list: [Tauri prerequisites](https://tauri.app/start/prerequisites/).
+
+### Run
+
+```bash
+git clone https://github.com/YatharthKaushal/kyro-terminal.git
+cd kyro-terminal/ui
+
+pnpm install
+pnpm tauri dev
+```
+
+### Build
+
+```bash
+# from ui/ — binary and installer land in ui/src-tauri/target/release/
+pnpm tauri build
+```
+
+### Checks
+
+```bash
+cd ui && pnpm check                                       # frontend types
+cargo fmt    --manifest-path engine/Cargo.toml --all --check
+cargo clippy --manifest-path engine/Cargo.toml --all-targets -- -D warnings
+cargo test   --manifest-path engine/Cargo.toml --all-targets
+cargo check  --manifest-path ui/src-tauri/Cargo.toml       # tauri shell
+```
+
+---
+
 ## Tech Stack
 
 | Layer | Built with |
@@ -117,18 +171,21 @@ sacrificing performance.
 
 ```text
 Terminal/
-├── engine/                 # Terminal engine (Rust)
-│   ├── parser/             #   ANSI/VT parsing
-│   ├── platforms/          #   Platform-specific PTY layers
-│   │   ├── windows/
-│   │   ├── linux/
-│   │   └── macos/
-│   ├── core/               #   Buffer, sessions, core logic
-│   └── integrations/       #   Git, SSH, AI
+├── engine/                     # Terminal engine (Rust crate)
+│   ├── Cargo.toml
+│   └── src/
+│       ├── lib.rs              #   Crate root
+│       ├── core/               #   Buffer, sessions, core logic
+│       ├── parser/             #   ANSI/VT parsing
+│       ├── platforms/          #   Platform-specific PTY layers
+│       │   ├── windows/        #     ConPTY
+│       │   ├── linux/          #     PTY
+│       │   └── macos/          #     PTY
+│       └── integrations/       #   Git, SSH, AI
 │
-└── ui/                     # Desktop app (Tauri + Svelte)
-    ├── src/                #   Svelte frontend
-    └── src-tauri/          #   Tauri shell
+└── ui/                         # Desktop app (Tauri + Svelte)
+    ├── src/                    #   Svelte frontend
+    └── src-tauri/              #   Tauri shell — depends on `engine`
 ```
 
 <details>
@@ -163,38 +220,92 @@ The desktop application built with Tauri and Svelte, responsible for:
 
 ---
 
+## Documentation
+
+<table>
+<tr>
+<td width="30%">
+
+**[Architecture](./ARCHITECTURE.md)**
+
+</td>
+<td>
+
+Project architecture, folder structure, technology stack, design philosophy, and
+development roadmap.
+
+</td>
+</tr>
+<tr>
+<td>
+
+**[Contributing](./CONTRIBUTING.md)**
+
+</td>
+<td>
+
+Prerequisites, local setup, project layout, and the checks CI runs.
+
+</td>
+</tr>
+<tr>
+<td>
+
+**[Code of Conduct](./CODE_OF_CONDUCT.md)**
+
+</td>
+<td>
+
+Expected behavior in issues, pull requests, and discussions.
+
+</td>
+</tr>
+<tr>
+<td>
+
+**[Security Policy](./SECURITY.md)**
+
+</td>
+<td>
+
+How to report a vulnerability privately.
+
+</td>
+</tr>
+</table>
+
+---
+
 ## Contributing
 
-Contributions are welcome. Before submitting a pull request:
+Contributions are welcome. Read **[CONTRIBUTING.md](CONTRIBUTING.md)** for setup,
+project layout, and the checks CI runs.
 
 1. **Fork** the repository.
 2. **Create** a feature branch.
 3. **Keep commits focused** and descriptive.
 4. **Follow** the existing project structure.
-5. **Test** your changes before submitting.
+5. **Run the checks** before submitting.
 6. **Open a PR** with a clear description of your changes.
 
 > [!TIP]
 > For larger features or architectural changes, open an issue first so the
 > implementation can be discussed before development begins.
 
+Also see the [Code of Conduct](CODE_OF_CONDUCT.md) and, for vulnerabilities, the
+[Security Policy](SECURITY.md) — please don't report those in public issues.
+
 ---
 
-## Code of Conduct
+## Acknowledgements
 
-Help keep the project welcoming and productive.
+Kyro stands on the work of others:
 
-| Do | Don't |
-| :--- | :--- |
-| Be respectful and constructive | Harass or discriminate |
-| Discuss ideas, not people | Make personal attacks |
-| Provide helpful feedback | Engage in abusive behavior |
-| Keep discussions professional | |
-| Respect differing opinions and technical approaches | |
-| Assume good intent from contributors | |
-
-Harassment, discrimination, personal attacks, or any form of abusive behavior
-will not be tolerated.
+- **[Tauri](https://tauri.app/)** — the desktop shell and native layer.
+- **[Svelte](https://svelte.dev/)** and **[SvelteKit](https://kit.svelte.dev/)** — the frontend.
+- **[Rust](https://www.rust-lang.org/)** — the engine.
+- **[Alacritty](https://github.com/alacritty/alacritty)** and **[WezTerm](https://github.com/wez/wezterm)** — prior art for terminal emulation and VT parsing, and the reference for Kyro's planned parser.
+- **[Microsoft ConPTY](https://devblogs.microsoft.com/commandline/windows-command-line-introducing-the-windows-pseudo-console-conpty/)** — pseudoconsole support on Windows.
 
 ---
 

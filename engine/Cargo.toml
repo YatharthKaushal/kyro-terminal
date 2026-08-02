@@ -1,0 +1,10 @@
+[package]
+name = "engine"
+version = "0.1.0"
+edition = "2024"
+description = "Kyro Terminal engine — PTY management, ANSI parsing, terminal buffer"
+repository = "https://github.com/YatharthKaushal/kyro-terminal"
+license = "LicenseRef-PolyForm-Noncommercial-1.0.0"
+publish = false
+
+[dependencies]
